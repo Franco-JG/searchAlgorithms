@@ -144,6 +144,38 @@ def breadthFirstSearch(problem):
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
+    cola = util.PriorityQueue()     #Se maneja los nodos en orden FIFO
+    nodosVis = []                           #Guarda los nodos visitados
+
+    #Se inicia la pila con un nodo inicial y camino vacio y se le agrega un costo inicial de 0
+    cola.push((problem.getStartState(), [], 0),0)
+
+    #Mientras la pila no esta vacia, pues el algoritmo sigue buscando
+    while not (cola.isEmpty()):
+        nodoAct, camino, costo = cola.pop()
+
+        #Si el nodo actual no ha sido visitado, procede a expandirlo.
+        if nodoAct not in nodosVis:
+                nodosVis.append(nodoAct)
+                
+                #Se verifica que sea el nodo buscado, de ser así, se regresa las "acciones" -> camino
+                if (problem.isGoalState(nodoAct)):
+                    return camino
+
+                #vecinos o sucesores del nodo actual
+                hijos = problem.getSuccessors(nodoAct)
+                for hijo, direccion, costoAct in hijos:
+                    
+                    #Calcula el costo acumulado siendo que suma el costo actual y el costo para llegar al sucesor.
+                    costoAcumu = costo + costoAct       
+                    
+                    #Se crea un nuevo camino agregando la una dirección al camino actual.
+                    nuevoCamino = camino + [direccion]  
+                    
+                    #Se añade el sucesor, el nuevo camino a la cola de prioridad y junto al costo como prioridad.
+                    cola.push((hijo, nuevoCamino, costoAcumu),costoAcumu)      
+
+    return None
     util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None):
