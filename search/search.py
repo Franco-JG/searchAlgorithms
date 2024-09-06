@@ -96,6 +96,7 @@ def depthFirstSearch(problem):
     
     #Mientras la pila no esta vacia, pues el algoritmo sigue buscando
     while not (pila.isEmpty()):
+        #Se extrae el nodo actual y el camino
         nodoAct, camino = pila.pop()
 
         #Si el nodo actual no ha sido visitado, procede a expandirlo
@@ -123,6 +124,7 @@ def breadthFirstSearch(problem):
 
     #Mientras la pila no esta vacia, pues el algoritmo sigue buscando
     while not (cola.isEmpty()):
+        #Se extrae el nodo actual y el camino hasta este nodo.
         nodoAct, camino = cola.pop()
 
         #Si el nodo actual no ha sido visitado, procede a expandirlo.
@@ -152,7 +154,7 @@ def uniformCostSearch(problem):
 
     #Mientras la pila no esta vacia, pues el algoritmo sigue buscando
     while not (cola.isEmpty()):
-        nodoAct, camino, costo = cola.pop()
+        nodoAct, camino, costo = cola.pop()     #Se extrae el nodo con el menor costo total acumulado
 
         #Si el nodo actual no ha sido visitado, procede a expandirlo.
         if nodoAct not in nodosVis:
@@ -188,6 +190,8 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
+
+
     util.raiseNotDefined()
 
 
