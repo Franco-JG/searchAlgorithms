@@ -166,13 +166,13 @@ def uniformCostSearch(problem):
 
                 #vecinos o sucesores del nodo actual
                 hijos = problem.getSuccessors(nodoAct)
-                for hijo, direccion, costoAct in hijos:
-                    
-                    #Calcula el costo acumulado siendo que suma el costo actual y el costo para llegar al sucesor.
-                    costoAcumu = costo + costoAct       
+                for hijo, direccion, costoAct in hijos:      
                     
                     #Se crea un nuevo camino agregando la una dirección al camino actual.
-                    nuevoCamino = camino + [direccion]  
+                    nuevoCamino = camino + [direccion] 
+
+                    #Calcula el costo acumulado 
+                    costoAcumu = problem.getCostOfActions(nuevoCamino) 
                     
                     #Se añade el sucesor, el nuevo camino a la cola de prioridad y junto al costo como prioridad.
                     cola.push((hijo, nuevoCamino, costoAcumu),costoAcumu)      
