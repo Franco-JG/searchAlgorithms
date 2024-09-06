@@ -87,11 +87,34 @@ def depthFirstSearch(problem):
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+   
+    pila = util.Stack()   #Encargada de almacenar tanto el nodo como el camino
+    nodosVis = []       #Lista de los nodos visitados
+    
+    #Se inicia la pila con un nodo inicial y camino vacio 
+    pila.push((problem.getStartState(), []))
+    
+    while not (pila.isEmpty()):
+        nodoAct, camino = pila.pop()
+
+        #En caso de no ser el nodo buscado, marca el nodo como visitado si no ha sido visitado antes
+        if nodoAct not in nodosVis:
+            nodosVis.append(nodoAct)   #Guarda a nodo en la lista de visitados
+
+            #Hay que verificar si el nodo es el nodo que buscamos
+            if (problem.isGoalState(nodoAct)):
+                return camino
+           
+            hijos = problem.getSuccessors(nodoAct)     #vecinos o sucesores del nodo actual
+            for hijo, direccion,costo in hijos:
+                nuevoCamino = camino + [direccion]
+                pila.push((hijo, nuevoCamino))
+    return None
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
+
     util.raiseNotDefined()
 
 def uniformCostSearch(problem):
