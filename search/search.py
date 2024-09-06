@@ -94,10 +94,11 @@ def depthFirstSearch(problem):
     #Se inicia la pila con un nodo inicial y camino vacio 
     pila.push((problem.getStartState(), []))
     
+    #Mientras la pila no esta vacia, pues el algoritmo sigue buscando
     while not (pila.isEmpty()):
         nodoAct, camino = pila.pop()
 
-        #En caso de no ser el nodo buscado, marca el nodo como visitado si no ha sido visitado antes
+        #Si el nodo actual no ha sido visitado, procede a expandirlo
         if nodoAct not in nodosVis:
             nodosVis.append(nodoAct)   #Guarda a nodo en la lista de visitados
 
@@ -114,8 +115,31 @@ def depthFirstSearch(problem):
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
+    cola = util.Queue()     #Se maneja los nodos en orden FIFO
+    nodosVis = []           #Guarda los nodos visitados
 
-    util.raiseNotDefined()
+    #Se inicia la pila con un nodo inicial y camino vacio
+    cola.push((problem.getStartState(), []))
+
+    #Mientras la pila no esta vacia, pues el algoritmo sigue buscando
+    while not (cola.isEmpty()):
+        nodoAct, camino = cola.pop()
+
+        #Si el nodo actual no ha sido visitado, procede a expandirlo.
+        if nodoAct not in nodosVis:
+                nodosVis.append(nodoAct)
+                
+                #Se verifica que sea el nodo buscado, de ser así, se regresa las "acciones" -> camino
+                if (problem.isGoalState(nodoAct)):
+                    return camino
+
+                #vecinos o sucesores del nodo actual
+                hijos = problem.getSuccessors(nodoAct)
+                for hijo, direccion,costo in hijos:
+                    nuevoCamino = camino + [direccion]  #Se crea un nuevo camino agregando la una dirección al camino actual.
+                    cola.push((hijo, nuevoCamino))      ## Añade el sucesor y el nuevo camino a la cola.
+
+    return None
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
