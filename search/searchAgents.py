@@ -302,6 +302,8 @@ class CornersProblem(search.SearchProblem):
         Returns whether this search state is a goal state of the problem.
         """
         "*** YOUR CODE HERE ***"
+        # Alcanzamos el objetivo cuando todas la esquinas fueron visitadas
+        return len(state[1]) == 4
         util.raiseNotDefined()
 
     def getSuccessors(self, state):
@@ -314,19 +316,35 @@ class CornersProblem(search.SearchProblem):
             state, 'action' is the action required to get there, and 'stepCost'
             is the incremental cost of expanding to that successor
         """
-
+        # Descomponemos el estado actual en la posición actual de Pacman y la lista de esquinas encontradas hasta el momento
+        currentPosition, foundCorners = state[0], state[1]
+        # Lista que almacenará los sucesores generados
         successors = []
+        # Iteramos sobre las posibles acciones: Norte, Sur, Este, Oeste
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
-            # Add a successor state to the successor list if the action is legal
-            # Here's a code snippet for figuring out whether a new position hits a wall:
-            #   x,y = currentPosition
-            #   dx, dy = Actions.directionToVector(action)
-            #   nextx, nexty = int(x + dx), int(y + dy)
-            #   hitsWall = self.walls[nextx][nexty]
-
-            "*** YOUR CODE HERE ***"
-
+            # Obtenemos las coordenadas actuales de Pacman
+            x, y = currentPosition
+            # Convertimos la acción a un vector de movimiento (dx, dy)
+            dx, dy = Actions.directionToVector(action)
+            # Calculamos la nueva posición (nextx, nexty) después de aplicar la acción
+            nextx, nexty = int(x + dx), int(y + dy)
+            # Verificamos si la nueva posición choca con una pared
+            hitsWall = self.walls[nextx][nexty]
+            # Si la nueva posición no choca con una pared
+            if not hitsWall:
+                # Si la nueva posición es una esquina y no ha sido visitada aún
+                if (nextx, nexty) in self.corners and (nextx, nexty) not in foundCorners:
+                    # Actualizamos la lista de esquinas visitadas añadiendo la nueva esquina
+                    visited = foundCorners + [(nextx, nexty)]
+                    # Añadimos el sucesor: nueva posición, esquinas actualizadas, acción, costo 1
+                    successors.append((((nextx, nexty), visited), action, 1))
+                # Si no es una esquina nueva o ya fue visitada
+                else:
+                    # Añadimos el sucesor sin modificar la lista de esquinas visitadas
+                    successors.append((((nextx, nexty), foundCorners), action, 1))
+        # Incrementamos el contador de nodos expandidos
         self._expanded += 1 # DO NOT CHANGE
+        # Retornamos la lista de sucesores generados
         return successors
 
     def getCostOfActions(self, actions):
@@ -356,11 +374,35 @@ def cornersHeuristic(state, problem):
     shortest path from the state to a goal of the problem; i.e.  it should be
     admissible (as well as consistent).
     """
-    corners = problem.corners # These are the corner coordinates
-    walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
-
-    "*** YOUR CODE HERE ***"
-    return 0 # Default to trivial solution
+    # Obtiene las coordenadas de las esquinas del laberinto y las paredes
+    corners = problem.corners  # Estas son las coordenadas de las esquinas
+    walls = problem.walls  # Estas son las paredes del laberinto
+    # Inicializamos una lista para las esquinas que no han sido visitadas
+    unvisited = []
+    # Las esquinas ya visitadas se extraen del estado actual
+    visited = state[1]  # Esquinas ya visitadas
+    # La posición actual de Pacman es el nodo actual
+    node = state[0]
+    # Inicializamos la heurística con 0 (suma de las distancias acumuladas)
+    heuristic = 0
+    # Recorremos todas las esquinas del laberinto
+    for corner in corners:
+        # Si una esquina no ha sido visitada, la añadimos a la lista de no visitadas
+        if not corner in visited:
+            unvisited.append(corner)
+    # Mientras haya esquinas no visitadas, calculamos la distancia mínima
+    while unvisited:
+        # Calcula la distancia de Manhattan desde el nodo actual a cada esquina no visitada
+        distance, corner = min([(util.manhattanDistance(node, corner), corner) 
+                                for corner in unvisited])
+        # Sumamos la distancia mínima a la heurística
+        heuristic += distance
+        # Actualizamos el nodo actual a la esquina más cercana
+        node = corner
+        # Quitamos la esquina más cercana de la lista de no visitadas
+        unvisited.remove(corner)
+    # Retornamos la heurística calculada (distancia acumulada)
+    return heuristic
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
@@ -452,9 +494,17 @@ def foodHeuristic(state, problem):
     Subsequent calls to this heuristic can access
     problem.heuristicInfo['wallCount']
     """
-    position, foodGrid = state
+    pacmanPosition, foodGrid = state
     "*** YOUR CODE HERE ***"
-    return 0
+    foodPositions = foodGrid.asList()
+    # Si no hay comida restante, la heurística es 0
+    if not foodPositions:
+        return 0
+    # Calculamos la distancia en el laberinto a cada pieza de comida usando la distancia de laberinto
+    distances = [mazeDistance(pacmanPosition, food, problem.startingGameState) for food in foodPositions]
+    
+    # Devolvemos la distancia máxima (a la pieza de comida más lejana)
+    return max(distances)
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
