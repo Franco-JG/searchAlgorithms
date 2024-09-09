@@ -289,22 +289,22 @@ class CornersProblem(search.SearchProblem):
         # in initializing the problem
         "*** YOUR CODE HERE ***"
 
-    def getStartState(self):
+    def getStartState(self):    
+        #[x] def getStartState(self):
         """
-        Returns the start state (in your state space, not the full Pacman state
-        space)
+        Retorna el estado inicial (en tu espacio de estados, no en el espacio completo de Pacman)
         """
-        "*** YOUR CODE HERE ***"
-        return (self.startingPosition, [])
+        visitedCorners = [False for c in self.corners]  # Inicialmente, todas las esquinas están no visitadas (False)
+        startState = (self.startingPosition, tuple(visitedCorners))  # Estado inicial con la posición de Pacman y las esquinas visitadas
+        return startState
 
-    def isGoalState(self, state):
+    def isGoalState(self, state):   #[x] def isGoalState(self, state):
         """
-        Returns whether this search state is a goal state of the problem.
+        Retorna si este estado de búsqueda es un estado objetivo del problema.
         """
-        "*** YOUR CODE HERE ***"
-        # Alcanzamos el objetivo cuando todas la esquinas fueron visitadas
-        return len(state[1]) == 4
-        util.raiseNotDefined()
+        if False in state[1]:  # Verifica si hay alguna esquina no visitada
+            return False  # Si hay alguna esquina no visitada, no es un estado objetivo
+        return True  # Si todas las esquinas han sido visitadas, es un estado objetivo
 
     def getSuccessors(self, state):
         """
@@ -316,35 +316,24 @@ class CornersProblem(search.SearchProblem):
             state, 'action' is the action required to get there, and 'stepCost'
             is the incremental cost of expanding to that successor
         """
-        # Descomponemos el estado actual en la posición actual de Pacman y la lista de esquinas encontradas hasta el momento
-        currentPosition, foundCorners = state[0], state[1]
-        # Lista que almacenará los sucesores generados
-        successors = []
-        # Iteramos sobre las posibles acciones: Norte, Sur, Este, Oeste
+        #[x] def getSuccessors(self, state):
+        successors = []  # Lista para almacenar los sucesores
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
-            # Obtenemos las coordenadas actuales de Pacman
-            x, y = currentPosition
-            # Convertimos la acción a un vector de movimiento (dx, dy)
-            dx, dy = Actions.directionToVector(action)
-            # Calculamos la nueva posición (nextx, nexty) después de aplicar la acción
-            nextx, nexty = int(x + dx), int(y + dy)
-            # Verificamos si la nueva posición choca con una pared
-            hitsWall = self.walls[nextx][nexty]
-            # Si la nueva posición no choca con una pared
-            if not hitsWall:
-                # Si la nueva posición es una esquina y no ha sido visitada aún
-                if (nextx, nexty) in self.corners and (nextx, nexty) not in foundCorners:
-                    # Actualizamos la lista de esquinas visitadas añadiendo la nueva esquina
-                    visited = foundCorners + [(nextx, nexty)]
-                    # Añadimos el sucesor: nueva posición, esquinas actualizadas, acción, costo 1
-                    successors.append((((nextx, nexty), visited), action, 1))
-                # Si no es una esquina nueva o ya fue visitada
-                else:
-                    # Añadimos el sucesor sin modificar la lista de esquinas visitadas
-                    successors.append((((nextx, nexty), foundCorners), action, 1))
-        # Incrementamos el contador de nodos expandidos
-        self._expanded += 1 # DO NOT CHANGE
-        # Retornamos la lista de sucesores generados
+            parentX, parentY = state[0]  # Posición actual de Pacman
+            dx, dy = Actions.directionToVector(action)  # Vector de dirección para la acción
+            successorX, successorY = int(parentX + dx), int(parentY + dy)  # Nueva posición
+            hitsWall = self.walls[successorX][successorY]  # Verifica si hay una pared en la nueva posición
+
+            if not hitsWall:  # Si no hay pared
+                successorCornerState = list(state[1])  # Copia el estado de esquinas visitadas
+                if (successorX, successorY) in self.corners:  # Si la nueva posición es una esquina
+                    cornerIndex = self.corners.index((successorX, successorY))  # Encuentra el índice de la esquina
+                    successorCornerState[cornerIndex] = True  # Marca la esquina como visitada
+
+                successorState = ((successorX, successorY), tuple(successorCornerState))  # Crea el nuevo estado sucesor
+                successors.append((successorState, action, 1))  # Añade el sucesor a la lista con acción y costo
+
+        self._expanded += 1  # Incrementa el contador de nodos expandidos
         return successors
 
     def getCostOfActions(self, actions):
@@ -374,35 +363,23 @@ def cornersHeuristic(state, problem):
     shortest path from the state to a goal of the problem; i.e.  it should be
     admissible (as well as consistent).
     """
-    # Obtiene las coordenadas de las esquinas del laberinto y las paredes
-    corners = problem.corners  # Estas son las coordenadas de las esquinas
-    walls = problem.walls  # Estas son las paredes del laberinto
-    # Inicializamos una lista para las esquinas que no han sido visitadas
-    unvisited = []
-    # Las esquinas ya visitadas se extraen del estado actual
-    visited = state[1]  # Esquinas ya visitadas
-    # La posición actual de Pacman es el nodo actual
-    node = state[0]
-    # Inicializamos la heurística con 0 (suma de las distancias acumuladas)
-    heuristic = 0
-    # Recorremos todas las esquinas del laberinto
-    for corner in corners:
-        # Si una esquina no ha sido visitada, la añadimos a la lista de no visitadas
-        if not corner in visited:
-            unvisited.append(corner)
-    # Mientras haya esquinas no visitadas, calculamos la distancia mínima
-    while unvisited:
-        # Calcula la distancia de Manhattan desde el nodo actual a cada esquina no visitada
-        distance, corner = min([(util.manhattanDistance(node, corner), corner) 
-                                for corner in unvisited])
-        # Sumamos la distancia mínima a la heurística
-        heuristic += distance
-        # Actualizamos el nodo actual a la esquina más cercana
-        node = corner
-        # Quitamos la esquina más cercana de la lista de no visitadas
-        unvisited.remove(corner)
-    # Retornamos la heurística calculada (distancia acumulada)
-    return heuristic
+    #[x] def cornersHeuristic(state, problem):
+    corners = problem.corners  # Coordenadas de las esquinas
+    walls = problem.walls  # Mapa de las paredes
+
+    if problem.isGoalState(state):
+        return 0  # Retorna 0 si el estado es un objetivo
+    
+    visited = state[1]  # Lista de esquinas visitadas
+    maxCornerDistance = -1  # Distancia máxima entre esquinas no visitadas
+    for i in range(len(corners)):  # Itera sobre todas las esquinas
+        if visited[i]:  # Si la esquina ya está visitada, la salta
+            continue
+        cornerDistance = util.manhattanDistance(state[0], corners[i])  # Calcula la distancia a la esquina no visitada
+        if cornerDistance > maxCornerDistance:
+            maxCornerDistance = cornerDistance  # Actualiza la distancia máxima si es mayor
+
+    return maxCornerDistance  # Retorna la distancia máxima encontrada
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
@@ -494,17 +471,32 @@ def foodHeuristic(state, problem):
     Subsequent calls to this heuristic can access
     problem.heuristicInfo['wallCount']
     """
-    pacmanPosition, foodGrid = state
-    "*** YOUR CODE HERE ***"
-    foodPositions = foodGrid.asList()
-    # Si no hay comida restante, la heurística es 0
-    if not foodPositions:
-        return 0
-    # Calculamos la distancia en el laberinto a cada pieza de comida usando la distancia de laberinto
-    distances = [mazeDistance(pacmanPosition, food, problem.startingGameState) for food in foodPositions]
+    #[x] def foodHeuristic(state, problem):
+    if problem.isGoalState(state):
+        return 0  # Retorna 0 en caso de que el estado sea un estado objetivo
     
-    # Devolvemos la distancia máxima (a la pieza de comida más lejana)
-    return max(distances)
+    position, foodGrid = state  # Obtiene la posición actual de Pacman y la cuadrícula de comida
+    food = foodGrid.asList()  # Convierte la cuadrícula de comida en una lista de coordenadas de comida
+    maxDistance = 0  # Inicializa la distancia máxima a 0
+
+    # Encuentra los dos puntos con la mayor distancia entre ellos
+    # Inicializa ambos puntos como el primer punto en la lista de comida
+    # Al menos hay un punto de comida, de lo contrario, se habría detectado un estado objetivo
+    first = food[0]
+    second = food[0]
+    for i in range(len(food)):
+        for j in range(i + 1, len(food)):
+            dist = util.manhattanDistance(food[i], food[j])  # Calcula la distancia Manhattan entre dos puntos de comida
+            if dist > maxDistance:  # Si la distancia es mayor que la distancia máxima encontrada
+                maxDistance = dist  # Actualiza la distancia máxima
+                first = food[i]  # Actualiza el primer punto
+                second = food[j]  # Actualiza el segundo punto
+    
+    # Retorna la distancia máxima entre dos puntos de comida no comidos, más la distancia mínima
+    # entre la posición actual de Pacman y cualquiera de esos dos puntos
+    return maxDistance + min(
+        (util.manhattanDistance(position, first), util.manhattanDistance(position, second))
+    )
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
@@ -523,18 +515,18 @@ class ClosestDotSearchAgent(SearchAgent):
         self.actionIndex = 0
         print('Path found with cost %d.' % len(self.actions))
 
-    def findPathToClosestDot(self, gameState):
+    def findPathToClosestDot(self, gameState):  #[x] def findPathToClosestDot(self, gameState):
         """
         Returns a path (a list of actions) to the closest dot, starting from
         gameState.
         """
         # Here are some useful elements of the startState
-        startPosition = gameState.getPacmanPosition()
-        food = gameState.getFood()
-        walls = gameState.getWalls()
-        problem = AnyFoodSearchProblem(gameState)
-
-        "*** YOUR CODE HERE ***"
+        startPosition = gameState.getPacmanPosition()  # Obtiene la posición actual de Pacman
+        food = gameState.getFood()  # Obtiene la cuadrícula de comida
+        walls = gameState.getWalls()  # Obtiene la cuadrícula de paredes
+        problem = AnyFoodSearchProblem(gameState)  # Crea un problema de búsqueda para cualquier comida
+        # Resolver el problema usando BFS (búsqueda en anchura)
+        return search.breadthFirstSearch(problem)
         util.raiseNotDefined()
 
 class AnyFoodSearchProblem(PositionSearchProblem):
@@ -568,9 +560,10 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         The state is Pacman's position. Fill this in with a goal test that will
         complete the problem definition.
         """
-        x,y = state
-
-        "*** YOUR CODE HERE ***"
+        #[x] def isGoalState(self, state):
+        x,y = state         
+        # Cualquier estado con un punto de comida también es un estado objetivo.
+        return self.food[x][y]
         util.raiseNotDefined()
 
 def mazeDistance(point1, point2, gameState):
