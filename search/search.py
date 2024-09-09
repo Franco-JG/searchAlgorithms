@@ -99,8 +99,6 @@ def depthFirstSearch(problem):
     return camino
 
 def breadthFirstSearch(problem):
-    """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
     cola = util.Queue()     #Se maneja los nodos en orden FIFO
     nodosVis = []           #Guarda los nodos visitados
 
@@ -129,8 +127,6 @@ def breadthFirstSearch(problem):
     return camino
 
 def uniformCostSearch(problem):
-    """Search the node of least total cost first."""
-    "*** YOUR CODE HERE ***"
     cola = util.PriorityQueue()     #Se maneja los nodos en orden FIFO
     nodosVis = []                           #Guarda los nodos visitados
 
@@ -163,7 +159,7 @@ def uniformCostSearch(problem):
                     cola.push((hijo, nuevoCamino, costoAcumu),costoAcumu)      
 
     return camino
-    util.raiseNotDefined()
+
 
 def nullHeuristic(state, problem=None):
     """
@@ -173,8 +169,6 @@ def nullHeuristic(state, problem=None):
     return 0
 
 def aStarSearch(problem, heuristic=nullHeuristic):
-    """Search the node that has the lowest combined cost and heuristic first."""
-    "*** YOUR CODE HERE ***"
     cola = util.PriorityQueue()     #Se maneja los nodos en orden FIFO
     nodosVis = []                           #Guarda los nodos visitados
 
@@ -210,7 +204,6 @@ def aStarSearch(problem, heuristic=nullHeuristic):
                     cola.push((hijo, nuevoCamino, costoAcumu),costoTotal)   
 
     return camino
-    util.raiseNotDefined()
 
 
 # Abbreviations
