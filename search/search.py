@@ -121,8 +121,8 @@ def breadthFirstSearch(problem):
                 #vecinos o sucesores del nodo actual
                 hijos = problem.getSuccessors(nodoAct)
                 for hijo, direccion,costo in hijos:
-                    nuevoCamino = camino + [direccion]  #Se crea un nuevo camino agregando la una dirección al camino actual.
-                    cola.push((hijo, nuevoCamino))      ## Añade el sucesor y el nuevo camino a la cola.
+                    nuevoCamino = camino + [direccion] #Se crea un nuevo camino agregando la una dirección al camino actual.
+                    cola.push((hijo, nuevoCamino))      #Se añade el sucesor y el nuevo camino a la cola.
 
     return camino
 
