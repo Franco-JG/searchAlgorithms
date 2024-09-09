@@ -72,22 +72,7 @@ def tinyMazeSearch(problem):
     w = Directions.WEST
     return  [s, s, w, s, w, w, s, w]
 
-def depthFirstSearch(problem):
-    """
-    Search the deepest nodes in the search tree first.
-
-    Your search algorithm needs to return a list of actions that reaches the
-    goal. Make sure to implement a graph search algorithm.
-
-    To get started, you might want to try some of these simple commands to
-    understand the search problem that is being passed in:
-
-    print("Start:", problem.getStartState())
-    print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
-    print("Start's successors:", problem.getSuccessors(problem.getStartState()))
-    """
-    "*** YOUR CODE HERE ***"
-   
+def depthFirstSearch(problem):   
     pila = util.Stack()   #Encargada de almacenar tanto el nodo como el camino
     nodosVis = []       #Lista de los nodos visitados
     
@@ -107,11 +92,11 @@ def depthFirstSearch(problem):
             if (problem.isGoalState(nodoAct)):
                 return camino
            
-            hijos = problem.getSuccessors(nodoAct)     #vecinos o sucesores del nodo actual
+            hijos = problem.getSuccessors(nodoAct)     #sucesores del nodo actual
             for hijo, direccion,costo in hijos:
                 nuevoCamino = camino + [direccion]
                 pila.push((hijo, nuevoCamino))
-    return None
+    return camino
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
@@ -141,7 +126,7 @@ def breadthFirstSearch(problem):
                     nuevoCamino = camino + [direccion]  #Se crea un nuevo camino agregando la una dirección al camino actual.
                     cola.push((hijo, nuevoCamino))      ## Añade el sucesor y el nuevo camino a la cola.
 
-    return None
+    return camino
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
@@ -177,7 +162,7 @@ def uniformCostSearch(problem):
                     #Se añade el sucesor, el nuevo camino a la cola de prioridad y junto al costo como prioridad.
                     cola.push((hijo, nuevoCamino, costoAcumu),costoAcumu)      
 
-    return None
+    return camino
     util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None):
@@ -224,6 +209,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
                     #Se añade el sucesor, el nuevo camino a la cola de prioridad y junto al costo como prioridad.
                     cola.push((hijo, nuevoCamino, costoAcumu),costoTotal)   
 
+    return camino
     util.raiseNotDefined()
 
 
